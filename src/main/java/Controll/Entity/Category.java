@@ -1,5 +1,6 @@
 package Controll.Entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +28,8 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "categories")
-    private Set<Movie> movies = new HashSet<>();
-
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    private List<Movie> movies = new ArrayList<>();
     // Getters and setters
     public Integer getId() {
         return id;
@@ -48,11 +48,11 @@ public class Category {
     }
 
     public List<Movie> getMovies() {
-        return (List<Movie>) movies;
+        return movies;
     }
 
     public void setMovies(List<Movie> movies) {
-        this.movies = (Set<Movie>) movies;
+        this.movies = movies;
     }
     
     @Override

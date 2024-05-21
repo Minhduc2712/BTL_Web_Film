@@ -2,6 +2,7 @@ package Controll.Controller.Admin;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -141,18 +142,13 @@ public class MovieControllerAdmin extends HttpServlet {
         String mota = request.getParameter("mota");
         String price = request.getParameter("price");
         String noted = request.getParameter("noted");
-        
-        System.out.println(title + href1 + href2 + href3 + mota + noted);
-        // Fetch categories and set as request attribute
+
         List<Category> categories = categoryService.findAll();
         request.setAttribute("categories", categories);
 
-        if (title != null && href1 != null && href2 != null && href3 != null && daodien != null && dienvien != null && mota != null && noted != null) {
-        	System.out.println("1");
+        if (isValid(title, href1, href2, href3, poster, daodien, dienvien, mota, noted)) {
             try {
-            	System.out.println("2");
                 Movie movieCreate = movieService.create(title, href1, href2, href3, poster, daodien, dienvien, categoryIds, mota, price, noted);
-                System.out.println("3");
                 if (movieCreate != null) {
                     session.setAttribute("addMovieSuccess", true);
                     response.sendRedirect("movieviews");
@@ -163,13 +159,13 @@ public class MovieControllerAdmin extends HttpServlet {
                     return;
                 }
             } catch (Exception e) {
+                e.printStackTrace(); // Log the error for debugging
                 request.setAttribute("error", "An error occurred while creating the movie.");
             }
         } else {
             request.setAttribute("error", "All fields are required.");
         }
 
-        // Forward to the newFilm.jsp with categories
         request.getRequestDispatcher("/views/admin/newFilm.jsp").forward(request, response);
     }
 

@@ -60,7 +60,7 @@
 													<td><img src="<c:url value='${movie.poster}'/>"
 														class="img-fluid" width="250px"></td>
 													<td>${movie.title}</td>
-													<td width="100px">${movie.categories}</td>
+													<td width="100px">${movie.categoryNames}</td>
 													<td><c:set var="amount" value="${movie.price}" /> <c:set
 															var="locale" value="vi_VN" /> <fmt:setLocale
 															value="${locale}" /> <fmt:formatNumber

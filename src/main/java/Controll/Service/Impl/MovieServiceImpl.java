@@ -2,10 +2,14 @@ package Controll.Service.Impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import Controll.DTO.MovieDTO;
+import Controll.Dao.CategoryDao;
 import Controll.Dao.MovieDao;
 import Controll.Dao.Impl.MovieDaoImpl;
 import Controll.Entity.Category;
@@ -18,9 +22,9 @@ import Controll.Service.MovieService;
 public class MovieServiceImpl implements MovieService {
 
 	private MovieDao dao;
+	private CategoryDao categoryDAO;
 	
-	
-	private CategoryService categoryService = new CategoryServiceImpl();
+	public CategoryServiceImpl categoryService = new CategoryServiceImpl();
 
 	public MovieServiceImpl() {
 		dao = new MovieDaoImpl();
@@ -67,68 +71,73 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	@Override
-	public Movie create(String title, String href1, String href2, String href3, String poster, String daodien, String dienvien, String[] categoryIds,
-            String mota, String rawPrice, String description) {
-	    Movie existingMovie = findBySingleName(title);
-	    if (existingMovie == null) {
-	        Movie newMovie = new Movie();
-	        try {
-	            String cleanPrice = rawPrice.replace(".", "");
-	            int price = Integer.parseInt(cleanPrice);
+	@Transactional
+    public Movie create(String title, String href1, String href2, String href3, String poster, String daodien, String dienvien, 
+                        String[] categoryIds, String mota, String rawPrice, String description) {
+        Movie existingMovie = dao.findBySingleName(title);
+        if (existingMovie == null) {
+            Movie newMovie = new Movie();
+            try {
+                String cleanPrice = rawPrice.replace(".", "");
+                int price = Integer.parseInt(cleanPrice);
 
-	            newMovie.setTitle(title);
-	            newMovie.setHref1(href1);
-	            newMovie.setHref2(href2);
-	            newMovie.setHref3(href3);
-	            newMovie.setPoster(poster);
-	            newMovie.setDaodien(daodien);
-	            newMovie.setDienvien(dienvien);
-	            newMovie.setMota(mota);
-	            newMovie.setPrice(price);
-	            newMovie.setDescription(description);
-	            newMovie.setIsActive(Boolean.TRUE);
-	            newMovie.setViews(0);
-	            newMovie.setShares(0);
-	            newMovie.setAddDate(new Timestamp(System.currentTimeMillis()));
-	            
-	            List<Category> categories = new ArrayList<>();
-	            for (String categoryId : categoryIds) {
-	                Category category = categoryService.findById(Integer.parseInt(categoryId));
-	                categories.add(category);
-	            }
-	            newMovie.setCategories(categories);
+                newMovie.setTitle(title);
+                newMovie.setHref1(href1);
+                newMovie.setHref2(href2);
+                newMovie.setHref3(href3);
+                newMovie.setPoster(poster);
+                newMovie.setDaodien(daodien);
+                newMovie.setDienvien(dienvien);
+                newMovie.setMota(mota);
+                newMovie.setPrice(price);
+                newMovie.setDescription(description);
+                newMovie.setIsActive(true);
+                newMovie.setViews(0);
+                newMovie.setShares(0);
+                newMovie.setAddDate(new Timestamp(System.currentTimeMillis()));
 
-	            return dao.create(newMovie);
-	        } catch (NumberFormatException e) {
-	            throw new IllegalArgumentException("Invalid price format: " + rawPrice, e);
-	        }
-	    }
-	    return existingMovie;
-	}
+                List<Category> categories = new ArrayList<>();
+                for (String categoryId : categoryIds) {
+                    Category category = categoryService.findById(Integer.parseInt(categoryId));
+                    if (category != null) {
+                        categories.add(category);
+                    }
+                }
+                newMovie.setCategories(categories);
 
-	@Override
-	public Movie update(Integer id, String title, String href1, String href2, String href3, String daodien, String dienvien, String mota, String rawPrice,
-			String description) {
-		Movie videosUpdate = findById(id);
+                return dao.create(newMovie);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid price format: " + rawPrice, e);
+            }
+        }
+        return existingMovie;
+    }
 
-		int price = 0;
-		if (rawPrice.contains(",")) {
-			String cleanPrice = rawPrice.replace(",", "");
-			price = Integer.parseInt(cleanPrice);
-		} else {
-			String cleanPrice = rawPrice.replace(".", "");
-			price = Integer.parseInt(cleanPrice);
-		}
 
-		videosUpdate.setTitle(title);
-		videosUpdate.setDaodien(daodien);
-		videosUpdate.setDienvien(dienvien);
-		videosUpdate.setMota(mota);
-		videosUpdate.setPrice(price);
-		videosUpdate.setDescription(description);
-		videosUpdate.setIsActive(Boolean.TRUE);
-		return dao.update(videosUpdate);
-	}
+
+//	@Override
+//	public Movie update(Integer id, String title, String href1, String href2, String href3, String daodien, String dienvien, String mota, String rawPrice,
+//			String description) {
+//		Movie videosUpdate = findById(id);
+//
+//		int price = 0;
+//		if (rawPrice.contains(",")) {
+//			String cleanPrice = rawPrice.replace(",", "");
+//			price = Integer.parseInt(cleanPrice);
+//		} else {
+//			String cleanPrice = rawPrice.replace(".", "");
+//			price = Integer.parseInt(cleanPrice);
+//		}
+//
+//		videosUpdate.setTitle(title);
+//		videosUpdate.setDaodien(daodien);
+//		videosUpdate.setDienvien(dienvien);
+//		videosUpdate.setMota(mota);
+//		videosUpdate.setPrice(price);
+//		videosUpdate.setDescription(description);
+//		videosUpdate.setIsActive(Boolean.TRUE);
+//		return dao.update(videosUpdate);
+//	}
 
 	@Override
 	public Movie updateDisabled(String title, String href, String daodien, String dienvien, String theloai, String mota,

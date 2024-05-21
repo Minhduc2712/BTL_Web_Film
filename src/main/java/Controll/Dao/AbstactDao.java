@@ -5,6 +5,8 @@ import javax.persistence.StoredProcedureQuery;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.Hibernate;
+
 import Controll.DTO.MovieDTO;
 import Controll.Entity.Category;
 import Controll.Entity.Movie;
@@ -55,63 +57,81 @@ public class AbstactDao<T> {
 		}
 	}
 	
-	public List<MovieDTO> findAllMovies(boolean existIsActive) {
-	    EntityManager entityManager = JPAUtil.getEntityManager();
-	    try {
-	        StringBuilder sql = new StringBuilder();
-	        sql.append("SELECT m FROM Movie m");
-	        if (existIsActive) {
-	            sql.append(" WHERE m.isActive = true");
-	        }
-	        TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
-	        List<Movie> movies = query.getResultList();
-	        return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
-	    } finally {
-	        entityManager.close();
-	    }
-	}
+	
+    public List<MovieDTO> findAllMovies(boolean existIsActive) {
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT m FROM Movie m");
+            if (existIsActive) {
+                sql.append(" WHERE m.isActive = true");
+            }
+            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
+            List<Movie> movies = query.getResultList();
+            return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
+        } finally {
+            entityManager.close();
+        }
+    }
+
+
+    public List<MovieDTO> findAllMovies(int pageNumber, int pageSize) {
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.categories c");
+
+            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
+            query.setFirstResult((pageNumber - 1) * pageSize);
+            query.setMaxResults(pageSize);
+
+            List<Movie> movies = query.getResultList();
+
+            // Use Hibernate.initialize to ensure all collections are fetched
+            movies.forEach(movie -> {
+                Hibernate.initialize(movie.getCategories());
+                Hibernate.initialize(movie.getEpisodes());
+                // Initialize other lazy-loaded collections if needed
+            });
+
+            return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
+        } finally {
+            entityManager.close();
+        }
+    }
 
 	
-	public List<MovieDTO> findAllMovies(int pageNumber, int pageSize) {
-	    EntityManager entityManager = JPAUtil.getEntityManager();
-	    try {
-	        StringBuilder sql = new StringBuilder();
-	        sql.append("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.categories c");
-	        TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
-	        query.setFirstResult((pageNumber - 1) * pageSize);
-	        query.setMaxResults(pageSize);
-	        List<Movie> movies = query.getResultList();
-	        return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
-	    } finally {
-	        entityManager.close();
-	    }
-	}
+	
+	
+    private MovieDTO convertToDTO(Movie movie) {
+        MovieDTO dto = new MovieDTO();
+        dto.setId(movie.getId());
+        dto.setTitle(movie.getTitle());
+        dto.setHref1(movie.getHref1());
+        dto.setHref2(movie.getHref2());
+        dto.setHref3(movie.getHref3());
+        dto.setPoster(movie.getPoster());
+        dto.setViews(movie.getViews());
+        dto.setShares(movie.getShares());
+        dto.setDescription(movie.getDescription());
+        dto.setDaodien(movie.getDaodien());
+        dto.setDienvien(movie.getDienvien());
+        dto.setMota(movie.getMota());
+        dto.setPrice(movie.getPrice());
+        dto.setIsActive(movie.getIsActive());
+        dto.setAddDate(movie.getAddDate());
+        dto.setHoadon(movie.getHoadon());
+        dto.setEpisodes(movie.getEpisodes());
 
-	
-	
-	
-	private MovieDTO convertToDTO(Movie movie) {
-	    MovieDTO dto = new MovieDTO();
-	    dto.setId(movie.getId());
-	    dto.setTitle(movie.getTitle());
-	    dto.setHref1(movie.getHref1());
-	    dto.setHref2(movie.getHref2());
-	    dto.setHref3(movie.getHref3());
-	    dto.setPoster(movie.getPoster());
-	    dto.setViews(movie.getViews());
-	    dto.setShares(movie.getShares());
-	    dto.setDescription(movie.getDescription());
-	    dto.setDaodien(movie.getDaodien());
-	    dto.setDienvien(movie.getDienvien());
-	    dto.setMota(movie.getMota());
-	    dto.setPrice(movie.getPrice());
-	    dto.setIsActive(movie.getIsActive());
-	    dto.setAddDate(movie.getAddDate());
-	    dto.setHoadon(movie.getHoadon()); // Assuming `getHoadon()` returns the correct type
-	    dto.setEpisodes(movie.getEpisodes()); // Assuming `getEpisodes()` returns the correct type
-	    dto.setCategoryNames(movie.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
-	    return dto;
-	}
+        if (movie.getCategories() != null) {
+            List<String> categoryNames = movie.getCategories().stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
+            dto.setCategoryNames(categoryNames);
+        }
+
+        return dto;
+    }
 
 
 //	tìm tất cả và phân trang
@@ -278,19 +298,20 @@ public class AbstactDao<T> {
 	}
 
 	public T create(T entity) {
-		EntityManager entityManager = JPAUtil.getEntityManager();
-		try {
-			entityManager.getTransaction().begin();
-			entityManager.persist(entity);
-			entityManager.getTransaction().commit();
-			return entity;
-		} catch (Exception e) {
-			entityManager.getTransaction().rollback();
-			throw new RuntimeException(e);
-		} finally {
-			entityManager.close();
-		}
-	}
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entity = entityManager.merge(entity); // Ensure the entity is managed
+            entityManager.persist(entity);
+            entityManager.getTransaction().commit();
+            return entity;
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback();
+            throw new RuntimeException(e);
+        } finally {
+            entityManager.close();
+        }
+    }
 
 	public T update(T entity) {
 		EntityManager entityManager = JPAUtil.getEntityManager();
