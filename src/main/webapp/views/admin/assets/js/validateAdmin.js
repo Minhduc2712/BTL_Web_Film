@@ -101,7 +101,7 @@ function validateNewCategory() {
 }
 
 // confirm edit video
-function editVideo() {
+function editMovie() {
 	Swal.fire({
 		title: 'Cảnh Báo !',
 		text: "Bạn có chắc chắn chỉnh sửa video không ?",
@@ -127,7 +127,7 @@ function editVideo() {
 }
 
 // cofirm xoá video
-function deleteVideo(href) {
+function deleteMovie(href) {
 	Swal.fire({
 		title: 'Cảnh Báo !',
 		text: "Bạn có chắc chắn ngưng công chiếu phim không ?",

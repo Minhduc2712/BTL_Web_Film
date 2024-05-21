@@ -28,7 +28,7 @@ public interface MovieService {
 	Movie create(String title, String href1, String href2, String href3, String poster, String daodien, String dienvien, String[] categoryIds,
             String mota, String rawPrice, String description);
 
-	Movie update(Integer id, String title, String href1, String href2, String href3, String daodien, String dienvien, String[] categoryIds, String mota, String price,
+	Movie update(Integer id, String title, String href1, String href2, String href3, String poster, String daodien, String dienvien, String[] categoryIds, String mota, String rawPrice,
 			String description);
 
 	Movie updateDisabled(String title, String href, String daodien, String dienvien, String theloai, String mota,
@@ -36,11 +36,8 @@ public interface MovieService {
 
 	Movie RestoreMovie(String href);
 
-	Movie delete(String href);
+	Movie delete(Integer Id);
 
 	Movie DeleteMovieRestore(String href);
-
-	Movie update(String title, String href, String daodien, String dienvien, String mota, String rawPrice,
-			String description);
 
 }

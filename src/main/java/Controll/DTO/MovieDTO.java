@@ -24,6 +24,31 @@ public class MovieDTO {
     private List<String> categoryNames;
 
     // Getters và Setters
+    
+    public MovieDTO() {};
+    
+    public MovieDTO(int id, String title, String href1, String href2, String href3, String poster, int views,
+            int shares, String description, String daodien, String dienvien, String mota, int price,
+            Boolean isActive, Timestamp addDate, Object hoadon, Object episodes, List<String> categoryNames) {
+this.id = id;
+this.title = title;
+this.href1 = href1;
+this.href2 = href2;
+this.href3 = href3;
+this.poster = poster;
+this.views = views;
+this.shares = shares;
+this.description = description;
+this.daodien = daodien;
+this.dienvien = dienvien;
+this.mota = mota;
+this.price = price;
+this.isActive = isActive;
+this.addDate = addDate;
+this.hoadon = hoadon;
+this.episodes = episodes;
+this.categoryNames = categoryNames;
+}
 
     public int getId() {
         return id;

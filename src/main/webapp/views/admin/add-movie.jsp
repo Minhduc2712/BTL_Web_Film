@@ -56,7 +56,7 @@
 
 											<c:forEach items="${movies}" var="movie" varStatus="loop">
 												<tr>
-													<td scope="row">${loop.index + 1}</td>
+													<td scope="row">${movie.id}</td>
 													<td><img src="<c:url value='${movie.poster}'/>"
 														class="img-fluid" width="250px"></td>
 													<td>${movie.title}</td>
@@ -69,9 +69,9 @@
 													<td>
 														<div class="btn-group" role="group">
 															<button class="btn btn-primary ms-2 rounded-2"
-																onclick="editVideoGetHref('${movie.id}')">Sửa</button>
+																onclick="editMovieGetId('${movie.id}')">Sửa</button>
 															<button class="btn btn-danger ms-2 rounded-2"
-																onclick="deleteVideo('${movie.id}')">Xoá</button>
+																onclick="deleteMovie('${movie.id}')">Xoá</button>
 															<button type="button" data-bs-toggle="modal"
 																data-bs-target="#modalLiveDemo${loop.index}"
 																class="btn btn-success ms-2 rounded-2">Xem</button>
@@ -86,20 +86,20 @@
 													<div class="modal-dialog modal-xl modal-dialog-centered">
 														<div class="modal-content">
 															<iframe id="player" width="100%" height="600"
-																src="https://www.youtube.com/embed/${movie.href}"
+																src="https://www.youtube.com/embed/${movie.href1}"
 																frameborder="0" allowfullscreen></iframe>
 														</div>
 													</div>
 												</div>
 
-												<form id="videoForm" action="moviedelete" method="post">
+												<form id="movieForm" action="moviedelete" method="post">
 													<input type="hidden" name="confirmation" id="confirmDelete"
-														value="false" /> <input type="hidden" id="movieHref"
-														name="href">
+														value="false" /> <input type="hidden" id="movieId"
+														name="Id">
 												</form>
 
 												<form id="editForm" action="movieedit" method="get">
-													<input type="hidden" id="movieEditHref" name="href">
+													<input type="hidden" id="movieEditId" name="Id">
 												</form>
 
 											</c:forEach>
@@ -181,9 +181,35 @@
 
 	<script type="text/javascript">
 		// lấy href	sử dụng cho edit movie
-		function editVideoGetHref(href) {
-			document.getElementById("movieEditHref").value = href;
+		function editMovieGetId(Id) {
+			document.getElementById("movieEditId").value = Id;
 			document.getElementById("editForm").submit();
+		}
+		
+		function deleteMovie(href) {
+			Swal.fire({
+				title: 'Cảnh Báo !',
+				text: "Bạn có chắc chắn ngưng công chiếu phim không ?",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Đồng ý !'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					document.getElementById("confirmDelete").value = "true";
+					Swal.fire(
+						'Thành công !',
+						'Đổi trạng thái phim thành công !',
+						'success'
+					).then(() => {
+						document.getElementById("movieId").value = href;
+						document.getElementById("movieForm").submit();
+					});
+				}
+			});
+
+			return false;
 		}
 	</script>
 
