@@ -24,7 +24,7 @@
 	<section class="hero">
 		<div class="container">
 			<div class="hero__slider owl-carousel">
-				<c:forEach items="${videoTrend}" var="item">
+				<c:forEach items="${moviesTrend}" var="item">
 					<div class="hero__items set-bg" data-setbg="${item.poster}">
 						<div class="row">
 							<div class="col-lg-6">
@@ -34,7 +34,7 @@
 									<p>Thể loại: Phim chiếu rạp, Phim Việt Nam</p>
 									<c:choose>
 										<c:when test="${item.price == 0}">
-											<a href="video?action=watch&id=${item.id}"><span>Xem
+											<a href="movies?action=watch&id=${item.id}"><span>Xem
 													Ngay</span> <i class="fa fa-angle-right"></i></a>
 										</c:when>
 										<c:otherwise>
@@ -42,7 +42,7 @@
 											<c:set var="formattedPrice" value="${item.price}" />
 											<fmt:formatNumber var="formattedPrice"
 												value="${formattedPrice}" type="currency" currencyCode="VND" />
-											<a href="video?action=details&id=${item.href}"
+											<a href="movies?action=details&id=${item.href}"
 												class="watch-btn"><span>${formattedPrice}</span> <i
 												class="fa fa-angle-right"></i></a>
 										</c:otherwise>
@@ -81,30 +81,30 @@
 						</div>
 
 						<div class="row">
-							<c:forEach items="${videos}" var="video">
+							<c:forEach items="${movies}" var="movies">
 								<div class="col-lg-4 col-md-6 col-sm-6">
 									<div class="product__item">
 										<a
-											href="<c:url value='/video?action=details&id=${video.href}' />">
+											href="<c:url value='/movies?action=details&id=${movies.href1}' />">
 											<div class="product__item__pic set-bg"
-												data-setbg="${video.poster}">
+												data-setbg="${movies.poster}">
 												<div class="comment">
 													<i class="fa-solid fa-heart"></i> 11
 												</div>
 												<div class="view" style="margin-right: 50px">
-													<i class="fa fa-eye"></i> ${video.shares }
+													<i class="fa fa-eye"></i> ${movies.shares }
 												</div>
 												<div class="view">
-													<i class="fa fa-eye"></i> ${video.views }
+													<i class="fa fa-eye"></i> ${movies.views }
 												</div>
 											</div>
 										</a>
 										<div class="product__item__text">
 											<ul>
-												<li>${video.theloai}</li>
+												<li>${movies.categoryNames}</li>
 											</ul>
 											<h5>
-												<a href="#">${video.title }</a>
+												<a href="#">${movies.title }</a>
 											</h5>
 										</div>
 									</div>

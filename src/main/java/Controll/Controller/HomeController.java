@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Controll.Contanst.SessionAtrr;
+import Controll.DTO.MovieDTO;
 import Controll.Dao.UserDao;
 import Controll.Dao.Impl.UserDaoImpl;
 import Controll.Entity.History;
@@ -35,7 +36,7 @@ public class HomeController extends HttpServlet {
 	private UserDao dao = new UserDaoImpl();
 	private HistoryService historyService = new HistoryServiceImpl();
 	private UserService userService = new UserServiceImpl();
-	private MovieService movieServervice = new MovieServiceImpl();
+	private MovieService movieService = new MovieServiceImpl();
 	private HoaDonService hoadonService = new HoaDonServiceImpl();
 
 	@Override
@@ -79,22 +80,24 @@ public class HomeController extends HttpServlet {
 	protected void doGetIndex(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		List<Movie> movieTrend = movieServervice.findMovieTrending();
+		List<Movie> movieTrend = movieService.findMovieTrending();
 
-		List<Movie> countMovie = movieServervice.findAll();
+		List<MovieDTO> countMovie = movieService.findAllMovies();
+		System.out.println("movies" + countMovie);
 		int maxPage = (int) Math.ceil(countMovie.size() / (double) VIDEO_MAX_PAGE_SIZE);
 		request.setAttribute("maxPage", maxPage);
 
 		String pageNumber = request.getParameter("page");
 
-		List<Movie> movies;
+		List<MovieDTO> movies;
 		if (pageNumber == null || Integer.valueOf(pageNumber) > maxPage) {
-			movies = movieServervice.findAll(1, VIDEO_MAX_PAGE_SIZE);
+			movies = movieService.findAllMovies(1, VIDEO_MAX_PAGE_SIZE);
 			request.setAttribute("currenPage", 1);
 		} else {
-			movies = movieServervice.findAll(Integer.valueOf(pageNumber), VIDEO_MAX_PAGE_SIZE);
+			movies = movieService.findAllMovies(Integer.valueOf(pageNumber), VIDEO_MAX_PAGE_SIZE);
 			request.setAttribute("currenPage", Integer.valueOf(pageNumber));
 		}
+		System.out.println("movies" + movies);
 
 		request.setAttribute("movieTrend", movieTrend);
 		request.setAttribute("movies", movies);
@@ -109,18 +112,18 @@ public class HomeController extends HttpServlet {
 	protected void doGetCategories(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		List<Movie> countMovie = movieServervice.findAll();
+		List<MovieDTO> countMovie = movieService.findAllMovies();
 		int maxPage = (int) Math.ceil(countMovie.size() / (double) VIDEO_MAX_PAGE_SIZE);
 		request.setAttribute("maxPage", maxPage);
 
 		String pageNumber = request.getParameter("page");
 
-		List<Movie> movies;
+		List<MovieDTO> movies;
 		if (pageNumber == null || Integer.valueOf(pageNumber) > maxPage) {
-			movies = movieServervice.findAll(1, VIDEO_MAX_PAGE_SIZE);
+			movies = movieService.findAllMovies(1, VIDEO_MAX_PAGE_SIZE);
 			request.setAttribute("currenPage", 1);
 		} else {
-			movies = movieServervice.findAll(Integer.valueOf(pageNumber), VIDEO_MAX_PAGE_SIZE);
+			movies = movieService.findAllMovies(Integer.valueOf(pageNumber), VIDEO_MAX_PAGE_SIZE);
 			request.setAttribute("currenPage", Integer.valueOf(pageNumber));
 		}
 
@@ -171,8 +174,8 @@ public class HomeController extends HttpServlet {
 			throws ServletException, IOException {
 		String nameMovie = request.getParameter("search");
 
-		List<Movie> movieTrend = movieServervice.findMovieTrending();
-		List<Movie> movies = movieServervice.findByName(nameMovie);
+		List<Movie> movieTrend = movieService.findMovieTrending();
+		List<Movie> movies = movieService.findByName(nameMovie);
 
 		request.setAttribute("movieTrend", movieTrend);
 		request.setAttribute("movies", movies);

@@ -22,7 +22,12 @@ public class MovieDaoImpl extends AbstactDao<Movie> implements MovieDao {
 
 	@Override
 	public List<MovieDTO> findAll() {
-		return super.findAllMovies(true);
+		return super.findAllMovies( true);
+	}
+	
+	@Override
+	public List<Movie> findAll(int pageNumber, int pageSize) {
+		return super.findAll(Movie.class, true, pageNumber, pageSize);
 	}
 
 	@Override
@@ -35,16 +40,11 @@ public class MovieDaoImpl extends AbstactDao<Movie> implements MovieDao {
 		String sql = "SELECT o FROM Movie o WHERE o.title LIKE ?0";
 		return super.findMany(Movie.class, sql, "%" + name + "%");
 	}
-	
+		
 	@Override
 	public Movie findBySingleName(String name) {
 		String sql = "SELECT o FROM Movie o WHERE o.title = ?0";
 		return super.findOne(Movie.class, sql, name);
-	}
-
-	@Override
-	public List<Movie> findAll(int pageNumber, int pageSize) {
-		return super.findAll(Movie.class, true, pageNumber, pageSize);
 	}
 
 	@Override

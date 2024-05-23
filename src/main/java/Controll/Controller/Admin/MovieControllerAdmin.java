@@ -146,7 +146,7 @@ public class MovieControllerAdmin extends HttpServlet {
         List<Category> categories = categoryService.findAll();
         request.setAttribute("categories", categories);
 
-        if (isValid(title, href1, href2, href3, poster, daodien, dienvien, mota, noted)) {
+        if (isValid(title, href1, href2, href3, daodien, dienvien, mota, noted)) {
             try {
                 Movie movieCreate = movieService.create(title, href1, href2, href3, poster, daodien, dienvien, categoryIds, mota, price, noted);
                 if (movieCreate != null) {
@@ -169,12 +169,11 @@ public class MovieControllerAdmin extends HttpServlet {
         request.getRequestDispatcher("/views/admin/newFilm.jsp").forward(request, response);
     }
 
-    private boolean isValid(String title, String href1, String href2, String href3, String poster, String daodien, String dienvien, String mota, String noted) {
+    private boolean isValid(String title, String href1, String href2, String href3, String daodien, String dienvien, String mota, String noted) {
         return title != null && !title.isEmpty() &&
                href1 != null && !href1.isEmpty() &&
                href2 != null && !href2.isEmpty() &&
                href3 != null && !href3.isEmpty() &&
-               poster != null && !poster.isEmpty() &&
                daodien != null && !daodien.isEmpty() &&
                dienvien != null && !dienvien.isEmpty() &&
                mota != null && !mota.isEmpty() &&
@@ -186,9 +185,12 @@ public class MovieControllerAdmin extends HttpServlet {
     //	chỉnh sửa phim
     protected void doGetEditFilm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String href = request.getParameter("href");
-        Movie movie = movieService.findByHref(href);
-
+        Integer id = Integer.parseInt(request.getParameter("Id"));
+        Movie movie = movieService.findById(id);
+        List<Category> categories;
+        categories = categoryService.findAll();
+        System.out.print(categories);
+        request.setAttribute("categories", categories);
         // format giá tiền
         int pice = movie.getPrice();
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
@@ -200,22 +202,48 @@ public class MovieControllerAdmin extends HttpServlet {
     }
 
     protected void doPostEditFilm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String title = request.getParameter("title");
-        String href = request.getParameter("href");
+    	HttpSession session = request.getSession();
+    	Integer id = Integer.parseInt(request.getParameter("Id"));
+    	String title = request.getParameter("title");
+        String href1 = request.getParameter("href1");
+        String href2 = request.getParameter("href2");
+        String href3 = request.getParameter("href3");
+        String poster = request.getParameter("poster");
         String daodien = request.getParameter("daodien");
         String dienvien = request.getParameter("dienvien");
-        String theloai = request.getParameter("category");
+        String[] categoryIds = request.getParameterValues("categoryIds");
         String mota = request.getParameter("mota");
         String price = request.getParameter("price");
         String noted = request.getParameter("noted");
 
-        if (title != null && href != null && daodien != null && dienvien != null && theloai != null && mota != null && noted != null) {
+        System.out.println("Received parameters: " + title + ", " + href1 + ", " + href2 + ", " + href3 + ", " + poster + ", " + daodien + ", " + dienvien + ", " + Arrays.toString(categoryIds) + ", " + mota + ", " + price + ", " + noted);
 
-            Movie moviesUpdate = movieService.update(title, href, daodien, dienvien, mota, price, noted);
-            if (moviesUpdate != null) {
-                response.sendRedirect("movieviews");
+        
+        if (isValid(title, href1, href2, href3, daodien, dienvien, mota, noted)) {
+        	System.out.println(1);
+            try {
+            	System.out.println(2);
+                Movie movieUpdate = movieService.update(id, title, href1, href2, href3, poster, daodien, dienvien, categoryIds, mota, price, noted);
+                System.out.println(movieUpdate);
+                System.out.println(3);
+                if (movieUpdate != null) {
+                    session.setAttribute("editMovieSuccess", true);
+                    response.sendRedirect("movieviews");
+                    return;
+                } else {
+                    session.setAttribute("editMovieSuccess", false);
+                    response.sendRedirect("movieviews");
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Log the error for debugging
+                request.setAttribute("error", "An error occurred while creating the movie.");
             }
+        } else {
+            request.setAttribute("error", "All fields are required.");
         }
+
+        request.getRequestDispatcher("/views/admin/EditFilm.jsp").forward(request, response);
     }
 
     //	chỉnh sửa phim ngưng hoạt động
@@ -267,8 +295,8 @@ public class MovieControllerAdmin extends HttpServlet {
     //	xoá phim
     protected void doPostDeleteFilm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String href = request.getParameter("href");
-        Movie movies = movieService.delete(href);
+        Integer id = Integer.parseInt(request.getParameter("Id"));
+        Movie movies = movieService.delete(id);
 
         if (movies != null) {
             response.sendRedirect("movieviews");

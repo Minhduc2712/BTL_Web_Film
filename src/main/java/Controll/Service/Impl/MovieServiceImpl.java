@@ -113,31 +113,46 @@ public class MovieServiceImpl implements MovieService {
         return existingMovie;
     }
 
+	@Override
+	@Transactional
+	public Movie update(Integer id, String title, String href1, String href2, String href3, String poster, String daodien,
+	        String dienvien, String[] categoryIds, String mota, String rawPrice, String description) {
+	    Movie existingMovie = dao.findById(id);
+	    if (existingMovie != null) {
+	        try {
+	            String cleanPrice = rawPrice.replace(".", "");
+	            int price = Integer.parseInt(cleanPrice);
+
+	            existingMovie.setTitle(title);
+	            existingMovie.setHref1(href1);
+	            existingMovie.setHref2(href2);
+	            existingMovie.setHref3(href3);
+	            existingMovie.setPoster(poster);
+	            existingMovie.setDaodien(daodien);
+	            existingMovie.setDienvien(dienvien);
+	            existingMovie.setMota(mota);
+	            existingMovie.setPrice(price);
+	            existingMovie.setDescription(description);
+	            existingMovie.setIsActive(true);
+
+	            List<Category> categories = new ArrayList<>();
+	            for (String categoryId : categoryIds) {
+	                Category category = categoryService.findById(Integer.parseInt(categoryId));
+	                if (category != null) {
+	                    categories.add(category);
+	                }
+	            }
+	            existingMovie.setCategories(categories);
+
+	            return dao.update(existingMovie);
+	        } catch (NumberFormatException e) {
+	            throw new IllegalArgumentException("Invalid price format: " + rawPrice, e);
+	        }
+	    }
+	    return existingMovie;
+	}
 
 
-//	@Override
-//	public Movie update(Integer id, String title, String href1, String href2, String href3, String daodien, String dienvien, String mota, String rawPrice,
-//			String description) {
-//		Movie videosUpdate = findById(id);
-//
-//		int price = 0;
-//		if (rawPrice.contains(",")) {
-//			String cleanPrice = rawPrice.replace(",", "");
-//			price = Integer.parseInt(cleanPrice);
-//		} else {
-//			String cleanPrice = rawPrice.replace(".", "");
-//			price = Integer.parseInt(cleanPrice);
-//		}
-//
-//		videosUpdate.setTitle(title);
-//		videosUpdate.setDaodien(daodien);
-//		videosUpdate.setDienvien(dienvien);
-//		videosUpdate.setMota(mota);
-//		videosUpdate.setPrice(price);
-//		videosUpdate.setDescription(description);
-//		videosUpdate.setIsActive(Boolean.TRUE);
-//		return dao.update(videosUpdate);
-//	}
 
 	@Override
 	public Movie updateDisabled(String title, String href, String daodien, String dienvien, String theloai, String mota,
@@ -164,8 +179,8 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	@Override
-	public Movie delete(String href) {
-		Movie entity = findByHref(href);
+	public Movie delete(Integer Id) {
+		Movie entity = findById(Id);
 		entity.setIsActive(Boolean.FALSE);
 		return dao.update(entity);
 	}
@@ -181,20 +196,6 @@ public class MovieServiceImpl implements MovieService {
 	public Movie DeleteMovieRestore(String href) {
 		Movie movie = findByHref(href);
 		return dao.delete(movie);
-	}
-
-	@Override
-	public Movie update(String title, String href, String daodien, String dienvien, String mota, String rawPrice,
-			String description) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Movie update(Integer id, String title, String href1, String href2, String href3, String daodien,
-			String dienvien, String[] categoryIds, String mota, String price, String description) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -44,6 +44,22 @@ public class AbstactDao<T> {
 		}
 	}
 	
+    public List<MovieDTO> findAllMovies( boolean existIsActive) {
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT m FROM Movie m");
+            if (existIsActive) {
+                sql.append(" WHERE m.isActive = 1");
+            }
+            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
+            List<Movie> movies = query.getResultList();
+            return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
+        } finally {
+            entityManager.close();
+        }
+    }
+	
 	public List<T> findAll(Class<T> clazz){
 		EntityManager entityManager = JPAUtil.getEntityManager();
 		try {
@@ -58,21 +74,7 @@ public class AbstactDao<T> {
 	}
 	
 	
-    public List<MovieDTO> findAllMovies(boolean existIsActive) {
-        EntityManager entityManager = JPAUtil.getEntityManager();
-        try {
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT m FROM Movie m");
-            if (existIsActive) {
-                sql.append(" WHERE m.isActive = true");
-            }
-            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
-            List<Movie> movies = query.getResultList();
-            return movies.stream().map(this::convertToDTO).collect(Collectors.toList());
-        } finally {
-            entityManager.close();
-        }
-    }
+
 
 
     public List<MovieDTO> findAllMovies(int pageNumber, int pageSize) {
@@ -314,19 +316,22 @@ public class AbstactDao<T> {
     }
 
 	public T update(T entity) {
-		EntityManager entityManager = JPAUtil.getEntityManager();
-		try {
-			entityManager.getTransaction().begin();
-			entity = entityManager.merge(entity);
-			entityManager.getTransaction().commit();
-			return entity;
-		} catch (Exception e) {
-			entityManager.getTransaction().rollback();
-			throw new RuntimeException(e);
-		} finally {
-			entityManager.close();
-		}
+	    EntityManager entityManager = JPAUtil.getEntityManager();
+	    try {
+	        entityManager.getTransaction().begin();
+	        T mergedEntity = entityManager.merge(entity);
+	        entityManager.getTransaction().commit();
+	        return mergedEntity;
+	    } catch (Exception e) {
+	        if (entityManager.getTransaction().isActive()) {
+	            entityManager.getTransaction().rollback();
+	        }
+	        throw new RuntimeException("Error updating entity", e);
+	    } finally {
+	        entityManager.close();
+	    }
 	}
+
 	
 	public Category update(Integer id, String name) {
 	    EntityManager entityManager = JPAUtil.getEntityManager();
