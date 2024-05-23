@@ -1,7 +1,0 @@
-package Controll.Dao.Impl;
-
-import Controll.Dao.MessageDAO;
-
-public class MessageDAOImp implements MessageDAO{
-
-}

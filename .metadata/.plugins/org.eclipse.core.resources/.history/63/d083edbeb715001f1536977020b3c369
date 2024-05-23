@@ -1,8 +1,0 @@
-package Controll.Entity;
-
-import javax.persistence.*;
-@Entity
-@Table
-public class room {
-	
-}

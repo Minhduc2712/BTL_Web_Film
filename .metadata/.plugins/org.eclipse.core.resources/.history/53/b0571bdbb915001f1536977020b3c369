@@ -1,7 +1,0 @@
-package Controll.Service;
-
-import java.util.List;
-
-public interface MessageService {
-	List<message> 
-}

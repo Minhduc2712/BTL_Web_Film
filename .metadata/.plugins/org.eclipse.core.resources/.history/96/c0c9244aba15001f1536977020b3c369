@@ -1,9 +1,0 @@
-package Controll.Service.Impl;
-
-import Controll.Service.MessageService;
-
-public class MessageServiceImp implements MessageService{
-
-	
-	@Override
-}

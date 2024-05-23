@@ -1,7 +1,0 @@
-package Controll.Service.Impl;
-
-import Controll.Service.RoomService;
-
-public class RoomServiceImp implements RoomService{
-
-}
