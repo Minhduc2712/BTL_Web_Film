@@ -15,9 +15,9 @@ public class ShareDaoImpl extends AbstactDao<Share> implements ShareDao {
 	}
 
 	@Override
-	public Share findByUserIdAndMovieId(Integer userId, Integer videoId) {
-		String sql = "SELECT o FROM Share o WHERE o.user.id = ?0 AND o.video.id = ?1 AND o.video.isActive = 1";
-		return super.findOne(Share.class, sql, userId, videoId);
+	public Share findByUserIdAndMovieId(Integer userId, Integer movieId) {
+		String sql = "SELECT o FROM Share o WHERE o.user.id = ?0 AND o.video.id = ?1 AND o.movie.isActive = 1";
+		return super.findOne(Share.class, sql, userId, movieId);
 	}
 
 }

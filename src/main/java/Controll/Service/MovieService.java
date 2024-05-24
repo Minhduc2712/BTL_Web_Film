@@ -21,6 +21,8 @@ public interface MovieService {
 
 	Movie findBySingleName(String name);
 	
+	List<Movie> findByName(String name);
+	
 	List<Movie> findMovieByCategoryName(String categoryName);
 
 	List<Movie> findMovieTrending();

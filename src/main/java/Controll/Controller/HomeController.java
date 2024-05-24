@@ -175,7 +175,7 @@ public class HomeController extends HttpServlet {
 		String nameMovie = request.getParameter("search");
 
 		List<Movie> movieTrend = movieService.findMovieTrending();
-		List<Movie> movies = movieService.findByName(nameMovie);
+		List<Movie> movies = movieService.findBySingleName(nameMovie);
 
 		request.setAttribute("movieTrend", movieTrend);
 		request.setAttribute("movies", movies);

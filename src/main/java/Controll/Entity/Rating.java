@@ -31,7 +31,7 @@ public class Rating {
 	private User user;
 
 	@ManyToOne(cascade = CascadeType.MERGE)
-	@JoinColumn(name = "videoId", referencedColumnName = "id")
+	@JoinColumn(name = "movieId", referencedColumnName = "id")
 	@JsonIgnoreProperties(value = { "applications", "hibernateLazyInitializer" })
 	private Movie movie;
 

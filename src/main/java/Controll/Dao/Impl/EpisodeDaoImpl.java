@@ -21,7 +21,7 @@ public class EpisodeDaoImpl extends AbstactDao<Episode> implements EpisodeDao {
 
 	@Override
 	public Episode findByHref(String href) {
-		String sql = "SELECT o FROM Episode o WHERE o.videoUrl = ?0";
+		String sql = "SELECT o FROM Episode o WHERE o.href1 = ?0";
 		return super.findOne(Episode.class, sql, href);
 	}
 

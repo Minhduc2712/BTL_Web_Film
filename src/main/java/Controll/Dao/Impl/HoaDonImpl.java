@@ -28,7 +28,7 @@ public class HoaDonImpl extends AbstactDao<Hoadon> implements HoaDonDao {
 
 	@Override
 	public Hoadon findHoaDonByUserIdAndMovieId(int userId, int movieId) {
-		String jpql = "SELECT o FROM Hoadon o WHERE o.user.id = ?0 AND o.video.id = ?1";
+		String jpql = "SELECT o FROM Hoadon o WHERE o.user.id = ?0 AND o.movie.id = ?1";
 		return super.findOne(Hoadon.class, jpql, userId, movieId);
 	}
 
