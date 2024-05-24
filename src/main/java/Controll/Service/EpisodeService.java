@@ -24,19 +24,10 @@ public interface EpisodeService {
 
 	List<Episode> findAllMovieDelete(int pageNumber, int pageSize);
 
-//	Episode create(String title, String href, String poster, String daodien, String dienvien, String theloai, String mota,
-//			String price, String description);
-//
-//	Episode update(String title, String href, String daodien, String dienvien, String theloai, String mota, String price,
-//			String description);
-//
-//	Episode updateDisabled(String title, String href, String daodien, String dienvien, String theloai, String mota,
-//			String price, String description);
-//
-//	Episode RestoreVideo(String href);
-//
-//	Episode delete(String href);
-//
-//	Episode DeleteVideoRestore(String href);
+	Episode create(String title, Integer episodeNumber,Integer episodeId, String href1, String href2, String href3, String description);
 
+	Episode update(Integer id, String title, Integer episodeNumber,Integer episodeId, String href1, String href2, String href3, String description);
+	
+	Episode delete(Integer id);
+	
 }

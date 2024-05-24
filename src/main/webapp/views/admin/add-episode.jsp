@@ -7,7 +7,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FilmViet - Danh Sách Video</title>
+<title>FilmViet - Danh Sách Tập</title>
 
 <%@ include file="/views/admin/common/head.jsp"%>
 </head>
@@ -32,7 +32,7 @@
 			<div class="container-fluid">
 				<div class="card">
 					<div class="card-body">
-						<a class="btn btn-primary float-end" href="movieadd" role="button">
+						<a class="btn btn-primary float-end" href="episodeadd" role="button">
 							<i class="ti ti-file-plus"></i> Phim mới
 						</a>
 						<h5 class="card-title fw-semibold mb-4 mt-2">Danh Sách Video
@@ -44,34 +44,26 @@
 										<thead>
 											<tr>
 												<th scope="col">#</th>
-												<th scope="col">Poster</th>
-												<th scope="col">Tên phim</th>
-												<th scope="col">Thể loại</th>
-												<th scope="col">Giá tiền</th>
+												<th scope="col">Tập</th>
+												<th scope="col">Tên</th>
 												<th scope="col">Hành động</th>
 											</tr>
 										</thead>
 										<tbody>
 
 
-											<c:forEach items="${movies}" var="movie" varStatus="loop">
-												<tr data-url="episodesingleviews?movieId=${movie.id}">
-													<td scope="row">${movie.id}</td>
-													<td><img src="<c:url value='${movie.poster}'/>"
-														class="img-fluid" width="250px"></td>
-													<td>${movie.title}</td>
-													<td width="100px">${movie.categoryNames}</td>
-													<td><c:set var="amount" value="${movie.price}" /> <c:set
-															var="locale" value="vi_VN" /> <fmt:setLocale
-															value="${locale}" /> <fmt:formatNumber
-															value="${amount}" type="currency"
-															currencyCode="VND" /></td>
+											<c:forEach items="${episodes}" var="episode" varStatus="loop">
+												<tr>
+													<td scope="row">${episode.id}</td>
+
+													<td>${episode.episodeNumber}</td>
+													<td width="100px">${episode.title}</td>
 													<td>
 														<div class="btn-group" role="group">
 															<button class="btn btn-primary ms-2 rounded-2"
-																onclick="editMovieGetId('${movie.id}')">Sửa</button>
+																onclick="editEpisodeGetId('${episode.id}')">Sửa</button>
 															<button class="btn btn-danger ms-2 rounded-2"
-																onclick="deleteMovie('${movie.id}')">Xoá</button>
+																onclick="deleteEpisode('${episode.id}')">Xoá</button>
 															<button type="button" data-bs-toggle="modal"
 																data-bs-target="#modalLiveDemo${loop.index}"
 																class="btn btn-success ms-2 rounded-2">Xem</button>
@@ -86,20 +78,20 @@
 													<div class="modal-dialog modal-xl modal-dialog-centered">
 														<div class="modal-content">
 															<iframe id="player" width="100%" height="600"
-																src="https://www.youtube.com/embed/${movie.href1}"
+																src="https://www.youtube.com/embed/${episode.href1}"
 																frameborder="0" allowfullscreen></iframe>
 														</div>
 													</div>
 												</div>
 
-												<form id="movieForm" action="moviedelete" method="post">
+												<form id="episodeForm" action="episodedelete" method="post">
 													<input type="hidden" name="confirmation" id="confirmDelete"
-														value="false" /> <input type="hidden" id="movieId"
+														value="false" /> <input type="hidden" id="episodeId"
 														name="Id">
 												</form>
 
-												<form id="editForm" action="movieedit" method="get">
-													<input type="hidden" id="movieEditId" name="Id">
+												<form id="editForm" action="episodeedit" method="get">
+													<input type="hidden" id="episodeEditId" name="Id">
 												</form>
 
 											</c:forEach>
@@ -121,7 +113,7 @@
 
 								<c:if test="${currenPage > 1}">
 									<li class="page-item text-secondary"><a class="page-link"
-										href="movieviews?page=${currenPage - 1}" aria-disabled="true">
+										href="episodeviews?page=${currenPage - 1}" aria-disabled="true">
 											<i class="ti ti-chevron-left"></i>
 									</a></li>
 								</c:if>
@@ -130,7 +122,7 @@
 									<li
 										class="page-item text-secondary ${currenPage == i.index ? 'active' : ''}">
 										<a class="page-link"
-										href="<c:url value='movieviews?page=${i.index}'/>">${i.index}</a>
+										href="<c:url value='episodeviews?page=${i.index}'/>">${i.index}</a>
 									</li>
 								</c:forEach>
 
@@ -143,7 +135,7 @@
 
 								<c:if test="${currenPage < maxPage}">
 									<li class="page-item text-secondary"><a class="page-link"
-										href="movieviews?page=${currenPage + 1}" aria-disabled="true">
+										href="episodeviews?page=${currenPage + 1}" aria-disabled="true">
 											<i class="ti ti-chevron-right"></i>
 									</a></li>
 								</c:if>
@@ -165,7 +157,7 @@
 		if (addVideoSuccess) {
 	%>
 	<script>
-		showSwalAlert('success', 'Thêm movie thành công !');
+		showSwalAlert('success', 'Thêm episode thành công !');
 	</script>
 	<%
 	} else {
@@ -180,13 +172,13 @@
 	%>
 
 	<script type="text/javascript">
-		// lấy href	sử dụng cho edit movie
-		function editMovieGetId(Id) {
-			document.getElementById("movieEditId").value = Id;
+		// lấy href	sử dụng cho edit episode
+		function editEpisodeGetId(Id) {
+			document.getElementById("episodeEditId").value = Id;
 			document.getElementById("editForm").submit();
 		}
 		
-		function deleteMovie(href) {
+		function deleteEpisode(href) {
 			Swal.fire({
 				title: 'Cảnh Báo !',
 				text: "Bạn có chắc chắn ngưng công chiếu phim không ?",
@@ -203,32 +195,14 @@
 						'Đổi trạng thái phim thành công !',
 						'success'
 					).then(() => {
-						document.getElementById("movieId").value = href;
-						document.getElementById("movieForm").submit();
+						document.getElementById("episodeId").value = href;
+						document.getElementById("episodeForm").submit();
 					});
 				}
 			});
 
 			return false;
 		}
-		
-		document.addEventListener("DOMContentLoaded", function() {
-		    var rows = document.querySelectorAll("tbody tr");
-
-		    rows.forEach(function(row) {
-		        row.addEventListener("click", function(event) {
-		            // Kiểm tra nếu phần tử được click là một button hoặc nằm bên trong button
-		            if (event.target.tagName.toLowerCase() === 'button' || event.target.closest('button')) {
-		                return;
-		            }
-
-		            var url = row.getAttribute("data-url");
-		            if (url) {
-		                window.location.href = url;
-		            }
-		        });
-		    });
-		});
 	</script>
 
 </body>

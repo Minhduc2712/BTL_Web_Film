@@ -24,6 +24,7 @@ public class AdminFilter implements Filter {
                 checkOutAdmin(req, resp, chain);
                 break;
             case "/dashboarh":
+            	
             case "/likeonevideo":
             case "/userlike":
             case "/usershare":

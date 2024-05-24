@@ -3,6 +3,8 @@ package Controll.DTO;
 import java.sql.Timestamp;
 import java.util.List;
 
+import Controll.Entity.Episode;
+
 public class MovieDTO {
     private int id;
     private String title;
@@ -20,7 +22,7 @@ public class MovieDTO {
     private Boolean isActive;
     private Timestamp addDate;
     private Object hoadon; // Replace Object with the actual type
-    private Object episodes; // Replace Object with the actual type
+    private List<Episode> episodes; // Replace Object with the actual type
     private List<String> categoryNames;
 
     // Getters và Setters
@@ -29,7 +31,7 @@ public class MovieDTO {
     
     public MovieDTO(int id, String title, String href1, String href2, String href3, String poster, int views,
             int shares, String description, String daodien, String dienvien, String mota, int price,
-            Boolean isActive, Timestamp addDate, Object hoadon, Object episodes, List<String> categoryNames) {
+            Boolean isActive, Timestamp addDate, Object hoadon, List<Episode> episodes, List<String> categoryNames) {
 this.id = id;
 this.title = title;
 this.href1 = href1;
@@ -178,11 +180,11 @@ this.categoryNames = categoryNames;
         this.hoadon = hoadon;
     }
 
-    public Object getEpisodes() {
+    public List<Episode> getEpisodes() {
         return episodes;
     }
 
-    public void setEpisodes(Object episodes) {
+    public void setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
     }
 

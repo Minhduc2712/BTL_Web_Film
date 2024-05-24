@@ -13,7 +13,7 @@
     <meta name="keywords" content="Anime, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>FilmViet - ${video.title}</title>
+    <title>FilmViet - ${movie.title}</title>
     <%@ include file="/views/common/head.jsp" %>
 </head>
 
@@ -43,12 +43,12 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="anime__details__pic set-bg"
-                         data-setbg="${video.poster}">
+                         data-setbg="${movie.poster}">
                         <div class="comment">
-                            <i class="fa fa-comments"></i> ${video.shares}
+                            <i class="fa fa-comments"></i> ${movie.shares}
                         </div>
                         <div class="view">
-                            <i class="fa fa-eye"></i> ${video.views}
+                            <i class="fa fa-eye"></i> ${movie.views}
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         <div class="row">
                             <div class="col-12 col-md-9 col-lg-9">
                                 <div class="anime__details__title">
-                                    <h3>${video.title}</h3>
+                                    <h3>${movie.title}</h3>
                                     <span>Quốc gia: Việt Nam</span>
                                 </div>
                             </div>
@@ -77,8 +77,8 @@
                                                     ${checkedAttribute2}> <label for="rating-2"></label>
                                                 <input type="radio" name="rating" id="rating-1" value="1"
                                                     ${checkedAttribute1}> <label for="rating-1"></label>
-                                                <input id="videoIdHidden" name="href" type="hidden"
-                                                       value="${video.href}">
+                                                <input id="movieIdHidden" name="href" type="hidden"
+                                                       value="${movie.href1}">
                                             </div>
                                         </div>
                                     </form>
@@ -86,15 +86,15 @@
                             </c:if>
                         </div>
 
-                        <p>${video.description}</p>
+                        <p>${movie.description}</p>
                         <div class="anime__details__widget">
                             <div class="row">
                                 <div class="col-12 col-lg-12 col-md-12">
                                     <ul>
-                                        <li><span>Diễn viên:</span> ${video.dienvien}</li>
-                                        <li><span>Đạo diễn:</span> ${video.daodien}</li>
-                                        <li><span>Thể loại:</span> ${video.theloai}</li>
-                                        <li><span>Mô tả:</span> ${video.mota}</li>
+                                        <li><span>Diễn viên:</span> ${movie.dienvien}</li>
+                                        <li><span>Đạo diễn:</span> ${movie.daodien}</li>
+                                        <li><span>Thể loại:</span> ${movie.categoryNames}</li>
+                                        <li><span>Mô tả:</span> ${movie.mota}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -123,9 +123,9 @@
                             </c:if>
 
                             <c:choose>
-                                <c:when test="${video.price == 0}">
+                                <c:when test="${movie.price == 0}">
                                     <a
-                                            href="<c:url value='/video?action=watch&id=${video.href}'/>"
+                                            href="<c:url value='/movie?action=watch&id=${movie.href1}'/>"
                                             class="watch-btn"><span>Xem ngay</span> <i
                                             class="fa fa-angle-right"></i></a>
                                 </c:when>
@@ -133,17 +133,17 @@
                                     <c:choose>
                                         <c:when test="${ResponseCode.vnp_ResponseCode == '00'}">
                                             <a
-                                                    href="<c:url value='/video?action=watch&id=${video.href}'/>"
+                                                    href="<c:url value='/movie?action=watch&id=${movie.href1}'/>"
                                                     class="watch-btn"><span>Xem ngay</span> <i
                                                     class="fa fa-angle-right"></i></a>
                                         </c:when>
                                         <c:otherwise>
                                             <c:if test="${not empty sessionScope.currentUser}">
                                                 <c:set var="encodedTitle"
-                                                       value="${URLEncoder.encode(video.title, 'UTF-8')}"/>
+                                                       value="${URLEncoder.encode(movie.title, 'UTF-8')}"/>
 
                                                 <fmt:setLocale value="vi_VN"/>
-                                                <c:set var="formattedPrice" value="${video.price}"/>
+                                                <c:set var="formattedPrice" value="${movie.price}"/>
                                                 <fmt:formatNumber var="formattedPrice"
                                                                   value="${formattedPrice}" type="currency"
                                                                   currencyCode="VND"/>
@@ -154,7 +154,7 @@
 
                                             <c:if test="${empty sessionScope.currentUser}">
                                                 <fmt:setLocale value="vi_VN"/>
-                                                <c:set var="formattedPrice" value="${video.price}"/>
+                                                <c:set var="formattedPrice" value="${movie.price}"/>
                                                 <fmt:formatNumber var="formattedPrice"
                                                                   value="${formattedPrice}" type="currency"
                                                                   currencyCode="VND"/>
@@ -181,11 +181,11 @@
                 </div>
                 <div class="anime__details__episodes">
                     <div class="row">
-                        <c:forEach var="episode" items="${episodes}">
+                        <c:forEach var="episode" items="${movie.episodes}">
                             <div class="col-lg-3 col-md-4 col-sm-6">
                                 <div class="anime__details__episode">
                                     <h6>Tập ${episode.episodeNumber}: ${episode.title}</h6>
-                                    <a href="<c:url value='/episode?action=episode&id=${episode.videoUrl}'/>">Xem ngay</a>
+                                    <a href="<c:url value='/episode?action=episode&id=${episode.id}'/>">Xem ngay</a>
                                 </div>
                             </div>
                         </c:forEach>
@@ -225,7 +225,7 @@
 
                         <form action="comment" method="post">
                             <textarea placeholder="Nội dung..." name="comment" required></textarea>
-                            <input name="href" type="hidden" value="${video.href}">
+                            <input name="href" type="hidden" value="${movie.href1}">
 
                             <button type="submit">
                                 <i class="fa fa-location-arrow"></i> Gửi Nội Dung
@@ -325,9 +325,9 @@
                             class="btn btn-success rounded-0 ps-3 px-3">Gửi
                     </button>
                 </div>
-                <input id="videoIdHidden" name="href" type="hidden"
-                       value="${video.href}"> <input name="title" type="hidden"
-                                                     value="${video.title}">
+                <input id="movieIdHidden" name="href" type="hidden"
+                       value="${movie.href1}"> <input name="title" type="hidden"
+                                                     value="${movie.title}">
             </form>
         </div>
     </div>
@@ -339,7 +339,7 @@
         if (sendMailSuccess) {
 %>
 <script>
-    showSwalAlert('success', 'Chia sẽ video thành công !');
+    showSwalAlert('success', 'Chia sẽ movie thành công !');
 </script>
 <%
         }
@@ -377,7 +377,7 @@
             confirmButtonText: 'Đồng ý !'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "http://localhost:8080/BackEnd/payment?title=${encodedTitle}&price=${video.price}&href=${video.href}";
+                window.location.href = "http://localhost:8080/BackEnd/payment?title=${encodedTitle}&price=${movie.price}&href=${movie.href1}";
             }
         })
     }

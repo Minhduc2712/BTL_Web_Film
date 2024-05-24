@@ -13,7 +13,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.Hibernate;
+
 import Controll.Contanst.SessionAtrr;
+import Controll.DTO.MovieDTO;
 import Controll.Entity.Comment;
 import Controll.Entity.Episode;
 import Controll.Entity.History;
@@ -40,7 +43,7 @@ import Controll.Service.Impl.ShareServiceImpl;
 import Controll.Service.Impl.UserServiceImpl;
 import Controll.Util.SendEmailShareVideo;
 
-@WebServlet({"/video", "/share", "/rating", "/comment", "/episode"})
+@WebServlet({"/movies", "/share", "/rating", "/comment", "/episode"})
 public class MovieController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -97,141 +100,141 @@ public class MovieController extends HttpServlet {
     }
     
 
-    protected void doGetDetails(HttpSession session, Integer id, HttpServletRequest request,
-                                HttpServletResponse response) throws ServletException, IOException {
-        Movie movie = movieService.findById(id);
-        request.setAttribute("movie", movie);
-        System.out.println(movie);
-        List<Episode> episodes = episodeService.findByMovieId(movie.getId());
-        request.setAttribute("episodes", episodes);
-
-        System.out.println(episodes);
-
-        User user = (User) session.getAttribute(SessionAtrr.CURRENT_USER);
-        if (user != null) {
-            Hoadon hoadon = hoadonService.findHoaDonByUserIdAndMovieId(user.getId(), movie.getId());
-            if (hoadon != null) {
-                request.setAttribute("ResponseCode", hoadon);
-            }
-        }
-
-        List<Comment> cmt = commentService.findByMovieId(movie.getId());
-        request.setAttribute("comment", cmt);
-
-        LocalDateTime now = LocalDateTime.now();
-
-        for (Comment comment : cmt) {
-            Timestamp commentTimestamp = comment.getCommentDate();
-            LocalDateTime commentTime = commentTimestamp.toLocalDateTime();
-            Duration duration = Duration.between(commentTime, now);
-
-            long hours = duration.toHours();
-            long seconds = duration.getSeconds();
-
-            String timeAgo;
-
-            if (seconds < 60) {
-                timeAgo = seconds + " giây trước";
-            } else {
-                if (hours < 1) {
-                    long minutes = duration.toMinutes();
-                    timeAgo = minutes + " phút trước";
-                } else if (hours < 24) {
-                    timeAgo = hours + " giờ trước";
-                } else {
-                    long days = hours / 24;
-                    timeAgo = days + " ngày trước";
-                }
-            }
-            request.setAttribute("timeAgo", timeAgo);
-        }
-
-        User currentUser = (User) session.getAttribute(SessionAtrr.CURRENT_USER);
-
-        if (currentUser != null) {
-            Rating rating = ratingService.findByUserIdAndMovieId(currentUser.getId(), movie.getId());
-
-            if (rating != null) {
-                int ratingFromDatabase = rating.getRating();
-                String checkedAttribute5 = (ratingFromDatabase == 5) ? "checked" : "";
-                String checkedAttribute4 = (ratingFromDatabase == 4) ? "checked" : "";
-                String checkedAttribute3 = (ratingFromDatabase == 3) ? "checked" : "";
-                String checkedAttribute2 = (ratingFromDatabase == 2) ? "checked" : "";
-                String checkedAttribute1 = (ratingFromDatabase == 1) ? "checked" : "";
-
-                request.setAttribute("checkedAttribute5", checkedAttribute5);
-                request.setAttribute("checkedAttribute4", checkedAttribute4);
-                request.setAttribute("checkedAttribute3", checkedAttribute3);
-                request.setAttribute("checkedAttribute2", checkedAttribute2);
-                request.setAttribute("checkedAttribute1", checkedAttribute1);
-            } else {
-                request.setAttribute("checkedAttribute5", "");
-                request.setAttribute("checkedAttribute4", "");
-                request.setAttribute("checkedAttribute3", "");
-                request.setAttribute("checkedAttribute2", "");
-                request.setAttribute("checkedAttribute1", "");
-            }
-
-            History history = historyService.create(currentUser, movie);
-            request.setAttribute("flagLikeButton", history.getIsLiked());
-        }
-        
-//        if (video.isSeries()) {
-//            List<Episode> episodes = episodeService.findByVideoId(video.getId());
-//            request.setAttribute("episodes", episodes);
-//        }
-
-        request.getRequestDispatcher("/views/user/details.jsp").forward(request, response);
-    }
-    
-    protected void doGetEpisodeDetails(HttpSession session, Integer Id, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-//    	System.out.println("href"+ href);
-    	
-        
-        Episode episode = episodeService.findById(Id);
-        request.setAttribute("episode", episode);
-        System.out.println(episode);
-        List<Episode> episodes = episodeService.findByMovieId(episode.getMovie().getId());
-        request.setAttribute("episodes", episodes);
-        System.out.println(episodes);
-        Movie movie = movieService.findById(episode.getMovie().getId());
-        List<Comment> cmt = commentService.findByMovieId(episode.getMovie().getId());
-        request.setAttribute("video", movie);
-        System.out.println(movie);
-        request.setAttribute("comment", cmt);
-
-        // handle timestamp formatting, similar to the doGetDetails method
-        LocalDateTime now = LocalDateTime.now();
-
-        for (Comment comment : cmt) {
-            Timestamp commentTimestamp = comment.getCommentDate();
-            LocalDateTime commentTime = commentTimestamp.toLocalDateTime();
-            Duration duration = Duration.between(commentTime, now);
-
-            long hours = duration.toHours();
-            long seconds = duration.getSeconds();
-
-            String timeAgo;
-
-            if (seconds < 60) {
-                timeAgo = seconds + " giây trước";
-            } else {
-                if (hours < 1) {
-                    long minutes = duration.toMinutes();
-                    timeAgo = minutes + " phút trước";
-                } else if (hours < 24) {
-                    timeAgo = hours + " giờ trước";
-                } else {
-                    long days = hours / 24;
-                    timeAgo = days + " ngày trước";
-                }
-            }
-            request.setAttribute("timeAgo", timeAgo);
-        }
-
-        request.getRequestDispatcher("/views/user/episodeDetails.jsp").forward(request, response);
-    }
+	    protected void doGetDetails(HttpSession session, Integer id, HttpServletRequest request,
+	                                HttpServletResponse response) throws ServletException, IOException {
+	        MovieDTO movieDTO = movieService.findByIdDTO(id);
+	        Movie movie = movieService.findById(id);
+	//        Hibernate.initialize(movie.getCategories());
+	        request.setAttribute("movie", movieDTO);
+	        System.out.println(movie);
+	        List<Episode> episodes = episodeService.findByMovieId(movie.getId());
+	        request.setAttribute("episodes", episodes);
+	
+	        System.out.println(episodes);
+	
+	        User user = (User) session.getAttribute(SessionAtrr.CURRENT_USER);
+	        if (user != null) {
+	            Hoadon hoadon = hoadonService.findHoaDonByUserIdAndMovieId(user.getId(), movie.getId());
+	            if (hoadon != null) {
+	                request.setAttribute("ResponseCode", hoadon);
+	            }
+	        }
+	
+	        List<Comment> cmt = commentService.findByMovieId(movie.getId());
+	        request.setAttribute("comment", cmt);
+	
+	        LocalDateTime now = LocalDateTime.now();
+	
+	        for (Comment comment : cmt) {
+	            Timestamp commentTimestamp = comment.getCommentDate();
+	            LocalDateTime commentTime = commentTimestamp.toLocalDateTime();
+	            Duration duration = Duration.between(commentTime, now);
+	
+	            long hours = duration.toHours();
+	            long seconds = duration.getSeconds();
+	
+	            String timeAgo;
+	
+	            if (seconds < 60) {
+	                timeAgo = seconds + " giây trước";
+	            } else {
+	                if (hours < 1) {
+	                    long minutes = duration.toMinutes();
+	                    timeAgo = minutes + " phút trước";
+	                } else if (hours < 24) {
+	                    timeAgo = hours + " giờ trước";
+	                } else {
+	                    long days = hours / 24;
+	                    timeAgo = days + " ngày trước";
+	                }
+	            }
+	            request.setAttribute("timeAgo", timeAgo);
+	        }
+	
+	        User currentUser = (User) session.getAttribute(SessionAtrr.CURRENT_USER);
+	
+	        if (currentUser != null) {
+	            Rating rating = ratingService.findByUserIdAndMovieId(currentUser.getId(), movie.getId());
+	
+	            if (rating != null) {
+	                int ratingFromDatabase = rating.getRating();
+	                String checkedAttribute5 = (ratingFromDatabase == 5) ? "checked" : "";
+	                String checkedAttribute4 = (ratingFromDatabase == 4) ? "checked" : "";
+	                String checkedAttribute3 = (ratingFromDatabase == 3) ? "checked" : "";
+	                String checkedAttribute2 = (ratingFromDatabase == 2) ? "checked" : "";
+	                String checkedAttribute1 = (ratingFromDatabase == 1) ? "checked" : "";
+	
+	                request.setAttribute("checkedAttribute5", checkedAttribute5);
+	                request.setAttribute("checkedAttribute4", checkedAttribute4);
+	                request.setAttribute("checkedAttribute3", checkedAttribute3);
+	                request.setAttribute("checkedAttribute2", checkedAttribute2);
+	                request.setAttribute("checkedAttribute1", checkedAttribute1);
+	            } else {
+	                request.setAttribute("checkedAttribute5", "");
+	                request.setAttribute("checkedAttribute4", "");
+	                request.setAttribute("checkedAttribute3", "");
+	                request.setAttribute("checkedAttribute2", "");
+	                request.setAttribute("checkedAttribute1", "");
+	            }
+	
+	            History history = historyService.create(currentUser, movie);
+	            request.setAttribute("flagLikeButton", history.getIsLiked());
+	        }
+	        
+	//        if (video.isSeries()) {
+	//            List<Episode> episodes = episodeService.findByVideoId(video.getId());
+	//            request.setAttribute("episodes", episodes);
+	//        }
+	
+	        request.getRequestDispatcher("/views/user/details.jsp").forward(request, response);
+	    }
+	    
+	    protected void doGetEpisodeDetails(HttpSession session, Integer Id, HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException {
+	        
+	        Episode episode = episodeService.findById(Id);
+	        request.setAttribute("episode", episode);
+	        System.out.println(episode);
+	        List<Episode> episodes = episodeService.findByMovieId(episode.getMovie().getId());
+	        request.setAttribute("episodes", episodes);
+	        System.out.println(episodes);
+	        Movie movie = movieService.findById(episode.getMovie().getId());
+	        List<Comment> cmt = commentService.findByMovieId(episode.getMovie().getId());
+	        request.setAttribute("movie", movie);
+	        System.out.println(movie);
+	        request.setAttribute("comment", cmt);
+	
+	        // handle timestamp formatting, similar to the doGetDetails method
+	        LocalDateTime now = LocalDateTime.now();
+	
+	        for (Comment comment : cmt) {
+	            Timestamp commentTimestamp = comment.getCommentDate();
+	            LocalDateTime commentTime = commentTimestamp.toLocalDateTime();
+	            Duration duration = Duration.between(commentTime, now);
+	
+	            long hours = duration.toHours();
+	            long seconds = duration.getSeconds();
+	
+	            String timeAgo;
+	
+	            if (seconds < 60) {
+	                timeAgo = seconds + " giây trước";
+	            } else {
+	                if (hours < 1) {
+	                    long minutes = duration.toMinutes();
+	                    timeAgo = minutes + " phút trước";
+	                } else if (hours < 24) {
+	                    timeAgo = hours + " giờ trước";
+	                } else {
+	                    long days = hours / 24;
+	                    timeAgo = days + " ngày trước";
+	                }
+	            }
+	            request.setAttribute("timeAgo", timeAgo);
+	        }
+	
+	        request.getRequestDispatcher("/views/user/episodeDetails.jsp").forward(request, response);
+	    }
 
     protected void doGetLike(HttpSession session, Integer Id, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

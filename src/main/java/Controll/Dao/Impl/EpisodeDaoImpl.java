@@ -15,7 +15,7 @@ public class EpisodeDaoImpl extends AbstactDao<Episode> implements EpisodeDao {
 	
 	@Override
 	public List<Episode> findByMovieId(Integer id) {
-		String sql = "SELECT o FROM Episode o Where o.video.id = ?0";
+		String sql = "SELECT o FROM Episode o Where o.movie.id = ?0";
 		return super.findMany(Episode.class, sql, id);
 	}
 
@@ -27,7 +27,7 @@ public class EpisodeDaoImpl extends AbstactDao<Episode> implements EpisodeDao {
 
 	@Override
 	public List<Episode> findAll() {
-		return super.findAll(Episode.class, true);
+		return super.findAll(Episode.class);
 	}
 
 	@Override

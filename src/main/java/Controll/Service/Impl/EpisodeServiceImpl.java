@@ -4,17 +4,24 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import Controll.Dao.EpisodeDao;
+import Controll.Dao.MovieDao;
 import Controll.Dao.Impl.EpisodeDaoImpl;
 import Controll.Entity.Episode;
+import Controll.Entity.Movie;
 import Controll.Service.EpisodeService;
+import Controll.Service.MovieService;
 
 public class EpisodeServiceImpl implements EpisodeService {
 
 	private EpisodeDao dao;
+	private MovieDao movieDao;
 
 	public EpisodeServiceImpl() {
 		dao = new EpisodeDaoImpl();
 	}
+	
+	public MovieServiceImpl MovieService = new MovieServiceImpl();
+
 
 	@Override
 	public Episode findById(Integer id) {
@@ -62,101 +69,50 @@ public class EpisodeServiceImpl implements EpisodeService {
 	}
 
 
-//	@Override
-//	public Episode create(String title, String href, String poster, String daodien, String dienvien, String theloai,
-//			String mota, String rawPrice, String description) {
-//		Episode videosHref = findByHref(href);
-//		if (videosHref == null) {
-//			videosHref = new Episode();
-//			String cleanPrice = rawPrice.replace(".", "");
-//			int price = Integer.parseInt(cleanPrice);
-//
-//			videosHref.setTitle(title);
-//			videosHref.setHref(href);
-//			videosHref.setPoster(poster);
-//			videosHref.setDaodien(daodien);
-//			videosHref.setDienvien(dienvien);
-//			videosHref.setTheloai(theloai);
-//			videosHref.setMota(mota);
-//			videosHref.setPrice(price);
-//			videosHref.setDescription(description);
-//			videosHref.setIsActive(Boolean.TRUE);
-//			videosHref.setViews(0);
-//			videosHref.setShares(0);
-//			videosHref.setAddDate(new Timestamp(System.currentTimeMillis()));
-//			return dao.create(videosHref);
-//		}
-//		return videosHref;
-//	}
-//
-//	@Override
-//	public Video update(String title, String href, String daodien, String dienvien, String theloai, String mota,
-//			String rawPrice, String description) {
-//		Video videosHref = findByHref(href);
-//
-//		int price = 0;
-//		if (rawPrice.contains(",")) {
-//			String cleanPrice = rawPrice.replace(",", "");
-//			price = Integer.parseInt(cleanPrice);
-//		} else {
-//			String cleanPrice = rawPrice.replace(".", "");
-//			price = Integer.parseInt(cleanPrice);
-//		}
-//
-//		videosHref.setTitle(title);
-//		videosHref.setDaodien(daodien);
-//		videosHref.setDienvien(dienvien);
-//		videosHref.setTheloai(theloai);
-//		videosHref.setMota(mota);
-//		videosHref.setPrice(price);
-//		videosHref.setDescription(description);
-//		videosHref.setIsActive(Boolean.TRUE);
-//		return dao.update(videosHref);
-//	}
-//
-//	@Override
-//	public Video updateDisabled(String title, String href, String daodien, String dienvien, String theloai, String mota,
-//			String rawPrice, String description) {
-//		Video videosHref = findByHref(href);
-//
-//		int price = 0;
-//		if (rawPrice.contains(",")) {
-//			String cleanPrice = rawPrice.replace(",", "");
-//			price = Integer.parseInt(cleanPrice);
-//		} else {
-//			String cleanPrice = rawPrice.replace(".", "");
-//			price = Integer.parseInt(cleanPrice);
-//		}
-//
-//		videosHref.setTitle(title);
-//		videosHref.setDaodien(daodien);
-//		videosHref.setDienvien(dienvien);
-//		videosHref.setTheloai(theloai);
-//		videosHref.setMota(mota);
-//		videosHref.setPrice(price);
-//		videosHref.setDescription(description);
-//		videosHref.setIsActive(Boolean.FALSE);
-//		return dao.update(videosHref);
-//	}
-//
-//	@Override
-//	public Video delete(String href) {
-//		Video entity = findByHref(href);
-//		entity.setIsActive(Boolean.FALSE);
-//		return dao.update(entity);
-//	}
-//
-//	@Override
-//	public Video RestoreVideo(String href) {
-//		Video video = findByHref(href);
-//		video.setIsActive(Boolean.TRUE);
-//		return dao.update(video);
-//	}
-//
-//	@Override
-//	public Video DeleteVideoRestore(String href) {
-//		Video video = findByHref(href);
-//		return dao.delete(video);
-//	}
+	@Override
+	public Episode create(String title, Integer episodeNumber,Integer episodeId, String href1, String href2, String href3, String description) {
+		Movie movie = MovieService.findById(episodeId);
+		Episode newEpisode = new Episode();
+
+	    newEpisode.setMovie(movie);  // Associate the episode with the found movie
+	    newEpisode.setTitle(title);
+	    newEpisode.setEpisodeNumber(episodeNumber);
+	    newEpisode.setHref1(href1);
+	    newEpisode.setHref2(href2);
+	    newEpisode.setHref3(href3);
+	    newEpisode.setDescription(description);
+	    newEpisode.setReleaseDate(new Timestamp(System.currentTimeMillis()));
+		return dao.create(newEpisode);
+	}
+	
+	@Override
+	public Episode update(Integer id, String title, Integer episodeNumber, Integer episodeId, String href1,
+			String href2, String href3, String description) {
+		Episode existingEpisode = dao.findById(id);
+		Movie movie = MovieService.findById(episodeId);
+		if (existingEpisode != null) {
+			existingEpisode.setMovie(movie);  // Associate the episode with the found movie
+			existingEpisode.setTitle(title);
+			existingEpisode.setEpisodeNumber(episodeNumber);
+			existingEpisode.setHref1(href1);
+			existingEpisode.setHref2(href2);
+			existingEpisode.setHref3(href3);
+			existingEpisode.setDescription(description);
+			existingEpisode.setReleaseDate(new Timestamp(System.currentTimeMillis()));
+		return dao.update(existingEpisode);
+		}
+		return existingEpisode;
+
+	}
+
+	@Override
+	public Episode delete(Integer id) {
+		Episode entity = findById(id);
+		return dao.delete(entity);
+	}
+
+
+
+	
 
 }

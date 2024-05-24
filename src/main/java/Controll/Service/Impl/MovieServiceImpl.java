@@ -34,6 +34,11 @@ public class MovieServiceImpl implements MovieService {
 	public Movie findById(Integer id) {
 		return dao.findById(id);
 	}
+	
+	@Override
+	public MovieDTO findByIdDTO(Integer id) {
+		return dao.findByIdDTO(id);
+	}
 
 	@Override
 	public Movie findByHref(String href) {
@@ -68,6 +73,11 @@ public class MovieServiceImpl implements MovieService {
 	@Override
 	public List<Movie> findMovieTrending() {
 		return dao.findMovieTrending();
+	}
+	
+	@Override
+	public List<Movie> findMovieByCategoryName(String categoryName) {
+		return dao.findMovieByCategoryName(categoryName);
 	}
 
 	@Override
@@ -197,5 +207,9 @@ public class MovieServiceImpl implements MovieService {
 		Movie movie = findByHref(href);
 		return dao.delete(movie);
 	}
+
+	
+
+
 
 }

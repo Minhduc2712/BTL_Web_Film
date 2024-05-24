@@ -77,7 +77,7 @@ public class HomeControllerAdmin extends HttpServlet {
 
 	protected void doGetUserLike(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Integer movieId = Integer.parseInt(request.getParameter("href"));
+		Integer movieId = Integer.parseInt(request.getParameter("Id"));
 
 		List<MovieLikedInfo> movie = statsService.findMovieLikedInfo();
 

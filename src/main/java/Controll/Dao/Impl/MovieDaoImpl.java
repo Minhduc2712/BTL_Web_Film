@@ -9,9 +9,16 @@ import Controll.Entity.Movie;
 
 public class MovieDaoImpl extends AbstactDao<Movie> implements MovieDao {
 
+	private static final String String = null;
+
 	@Override
 	public Movie findById(Integer id) {
 		return super.findById(Movie.class, id);
+	}
+	
+	@Override
+	public MovieDTO findByIdDTO(Integer id) {
+		return super.findAllEpisodeById( id);
 	}
 
 	@Override
@@ -56,6 +63,11 @@ public class MovieDaoImpl extends AbstactDao<Movie> implements MovieDao {
 	public List<Movie> findMovieTrending() {
 		String jpql = "SELECT o FROM Movie o WHERE o.isActive = 1 ORDER BY o.addDate DESC";
 		return super.findManyMaxResult(Movie.class, jpql, 4);
+	}
+
+	@Override
+	public List<Movie> findMovieByCategoryName(String categoryName) {
+		return super.findByCategoryName(categoryName);
 	}
 
 	

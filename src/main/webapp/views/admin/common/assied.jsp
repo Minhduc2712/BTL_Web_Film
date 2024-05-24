@@ -45,6 +45,12 @@
 							class="ti ti-cards"></i>
 					</span> <span class="hide-menu">Tạo Phim</span>
 				</a></li>
+				
+				<li class="sidebar-item"><a class="sidebar-link"
+					href="episodeAllviews" aria-expanded="false"> <span> <i
+							class="ti ti-cards"></i>
+					</span> <span class="hide-menu">Tạo Tập</span>
+				</a></li>
 
 				<li class="sidebar-item"><a class="sidebar-link"
 					href="videodisabled" aria-expanded="false"> <span> <i
@@ -67,7 +73,7 @@
 					class="hide-menu">BÁO CÁO - THỐNG KÊ</span></li>
 
 				<li class="sidebar-item"><a class="sidebar-link"
-					href="likeonevideo" aria-expanded="false"> <span> <i
+					href="likeonemovie" aria-expanded="false"> <span> <i
 							class="ti ti-mood-happy"></i>
 					</span> <span class="hide-menu">Lượt thích từng video</span>
 				</a></li>

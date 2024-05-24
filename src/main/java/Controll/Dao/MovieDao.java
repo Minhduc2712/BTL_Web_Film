@@ -8,6 +8,8 @@ import Controll.Entity.Movie;
 public interface MovieDao {
 
 	Movie findById(Integer id);
+	
+	MovieDTO findByIdDTO(Integer id);
 
 	Movie findByHref(String href);
 
@@ -26,6 +28,8 @@ public interface MovieDao {
 	List<Movie> findAllMovieDelete(int pageNumber, int pageSize);
 
 	List<Movie> findMovieTrending();
+	
+	List<Movie> findMovieByCategoryName(String categoryName);
 
 	Movie create(Movie entity);
 

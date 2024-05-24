@@ -119,6 +119,16 @@
 		<servlet-name>CategoryControllerAdmin</servlet-name>
 		<url-pattern>/CategoryControllerAdmin</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<description></description>
+		<display-name>EpisodeControllerAdmin</display-name>
+		<servlet-name>EpisodeControllerAdmin</servlet-name>
+		<servlet-class>Controll.Controller.Admin.EpisodeControllerAdmin</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EpisodeControllerAdmin</servlet-name>
+		<url-pattern>/EpisodeControllerAdmin</url-pattern>
+	</servlet-mapping>
 	
 
 	<!--configue khi người dùng nhập đường dẫn sai thì sẽ vào 404 -->

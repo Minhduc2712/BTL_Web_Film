@@ -85,7 +85,7 @@
 								<div class="col-lg-4 col-md-6 col-sm-6">
 									<div class="product__item">
 										<a
-											href="<c:url value='/movies?action=details&id=${movies.href1}' />">
+											href="<c:url value='/movies?action=details&id=${movies.id}' />">
 											<div class="product__item__pic set-bg"
 												data-setbg="${movies.poster}">
 												<div class="comment">

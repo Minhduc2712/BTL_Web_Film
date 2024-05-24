@@ -7,10 +7,15 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.Hibernate;
 
+import Controll.DTO.EpisodeDTO;
 import Controll.DTO.MovieDTO;
 import Controll.Entity.Category;
+import Controll.Entity.Episode;
 import Controll.Entity.Movie;
 import Controll.Util.JPAUtil;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +64,51 @@ public class AbstactDao<T> {
             entityManager.close();
         }
     }
+    
+    public MovieDTO findByIdDTO(Integer id) {
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT m FROM Movie m LEFT JOIN FETCH m.categories ");
+            if (id != null) {
+                sql.append("WHERE m.id = :id");
+            }
+            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
+            if (id != null) {
+                query.setParameter("id", id);
+            }
+            Movie movie = query.getSingleResult();
+            return convertToDTO(movie);
+        } finally {
+            entityManager.close();
+        }
+    }
+    
+    public MovieDTO findAllEpisodeById(Integer id) {
+    	EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT m FROM Movie m LEFT JOIN FETCH m.episodes ");
+            if (id != null) {
+                sql.append("WHERE m.id = :id");
+            }
+            TypedQuery<Movie> query = entityManager.createQuery(sql.toString(), Movie.class);
+            if (id != null) {
+                query.setParameter("id", id);
+            }
+            Movie movie = query.getSingleResult();
+            
+            // Sort episodes by episode number
+            List<Episode> episodes = movie.getEpisodes();
+            if (episodes != null) {
+                Collections.sort(episodes, Comparator.comparingInt(Episode::getEpisodeNumber));
+            }
+
+            return convertToDTO(movie);
+        } finally {
+            entityManager.close();
+        }
+    }
 	
 	public List<T> findAll(Class<T> clazz){
 		EntityManager entityManager = JPAUtil.getEntityManager();
@@ -101,6 +151,20 @@ public class AbstactDao<T> {
             entityManager.close();
         }
     }
+    
+    
+    public List<Movie> findByCategoryName(String categoryName) {
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<Movie> query = entityManager.createQuery(
+                "SELECT m FROM Movie m JOIN m.categories c WHERE c.name = :categoryName", Movie.class
+            );
+            query.setParameter("categoryName", categoryName);
+            return query.getResultList();
+        } finally {
+            entityManager.close();
+        }
+    }
 
 	
 	
@@ -132,6 +196,17 @@ public class AbstactDao<T> {
             dto.setCategoryNames(categoryNames);
         }
 
+        return dto;
+    }
+    
+    private EpisodeDTO convertEpisodeToDTO(Episode episode) {
+        EpisodeDTO dto = new EpisodeDTO();
+        dto.setId(episode.getId());
+        dto.setEpisodeNumber(episode.getEpisodeNumber());
+        dto.setTitle(episode.getTitle());
+        dto.setHref1(episode.getHref1());
+        dto.setHref2(episode.getHref2());
+        dto.setHref3(episode.getHref3());
         return dto;
     }
 
@@ -287,16 +362,16 @@ public class AbstactDao<T> {
 
 	@SuppressWarnings("unchecked")
 	public List<Object[]> findManyByNativeQuery(String sql, Object... params) {
-		EntityManager entityManager = JPAUtil.getEntityManager();
-		try {
-			Query query = entityManager.createNativeQuery(sql);
-			for (int i = 0; i < params.length; i++) {
-				query.setParameter(i, params[i]);
-			}
-			return query.getResultList();
-		} finally {
-			entityManager.close();
-		}
+	    EntityManager entityManager = JPAUtil.getEntityManager();
+	    try {
+	        Query query = entityManager.createNativeQuery(sql);
+	        for (int i = 0; i < params.length; i++) {
+	            query.setParameter(i + 1, params[i]); // JPA Query parameters are 1-based
+	        }
+	        return query.getResultList();
+	    } finally {
+	        entityManager.close();
+	    }
 	}
 
 	public T create(T entity) {

@@ -203,6 +203,58 @@ function deleteCategory(Id) {
 
         return false;
     }
+    
+function editEpisode() {
+	Swal.fire({
+		title: 'Cảnh Báo !',
+		text: "Bạn có chắc chắn chỉnh sửa video không ?",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Đồng ý !'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			document.getElementById("confirmEdit").value = "true";
+			Swal.fire(
+				'Thành công !',
+				'Chỉnh sửa video thành công !',
+				'success'
+			).then(() => {
+				document.getElementById("ConfirmEditForm").submit();
+			});
+		}
+	});
+
+	return false;
+}
+
+// cofirm xoá video
+function deleteEpisode(href) {
+	Swal.fire({
+		title: 'Cảnh Báo !',
+		text: "Bạn có chắc chắn ngưng công chiếu phim không ?",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Đồng ý !'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			document.getElementById("confirmDelete").value = "true";
+			Swal.fire(
+				'Thành công !',
+				'Đổi trạng thái phim thành công !',
+				'success'
+			).then(() => {
+				document.getElementById("EpisodeHref").value = href;
+				document.getElementById("EpisodeForm").submit();
+			});
+		}
+	});
+
+	return false;
+}
 
 // cofirm edit user
 function ConfirmEditUser() {

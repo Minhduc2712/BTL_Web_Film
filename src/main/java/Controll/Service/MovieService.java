@@ -10,6 +10,8 @@ import Controll.Entity.Movie;
 public interface MovieService {
 
 	Movie findById(Integer id);
+	
+	MovieDTO findByIdDTO(Integer id);
 
 	Movie findByHref(String href);
 
@@ -18,6 +20,8 @@ public interface MovieService {
 	List<Movie> findAllMovieDelete();
 
 	Movie findBySingleName(String name);
+	
+	List<Movie> findMovieByCategoryName(String categoryName);
 
 	List<Movie> findMovieTrending();
 

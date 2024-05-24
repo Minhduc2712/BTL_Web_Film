@@ -11,17 +11,21 @@ public class StatsDaoImpl extends AbstactDao<Object[]> implements StatsDao {
 
 	@Override
 	public List<MovieLikedInfo> findMovieLikeInfo() {
-		String sql = "SELECT v.title, v.href, v.daodien, v.isActive, SUM(CAST(h.isLiked AS INT)) AS totalLike FROM dbo.video v"
-				+ " JOIN dbo.history h ON h.videoId = v.id WHERE v.isActive = 1 GROUP BY v.title, v.href, v.daodien, v.isActive"
-				+ " ORDER BY SUM(CAST(h.isLiked AS INT)) DESC";
-		List<Object[]> objects = super.findManyByNativeQuery(sql);
-		List<MovieLikedInfo> result = new ArrayList<>();
+	    String sql = "SELECT v.title, v.href1 AS href, v.daodien, v.isActive, " +
+	                 "SUM(CASE WHEN h.isLiked = TRUE THEN 1 ELSE 0 END) AS totalLike " +
+	                 "FROM movie v " +
+	                 "JOIN history h ON h.movieId = v.id " +
+	                 "WHERE v.isActive = 1 " +
+	                 "GROUP BY v.title, v.href1, v.daodien, v.isActive " +
+	                 "ORDER BY totalLike DESC";
+	    List<Object[]> objects = findManyByNativeQuery(sql);
+	    List<MovieLikedInfo> result = new ArrayList<>();
 
-		objects.forEach(object -> {
-			MovieLikedInfo likeInfo = setDataMovieLikedInfo(object);
-			result.add(likeInfo);
-		});
-		return result;
+	    objects.forEach(object -> {
+	        MovieLikedInfo likeInfo = setDataMovieLikedInfo(object);
+	        result.add(likeInfo);
+	    });
+	    return result;
 	}
 
 	private MovieLikedInfo setDataMovieLikedInfo(Object[] object) {
